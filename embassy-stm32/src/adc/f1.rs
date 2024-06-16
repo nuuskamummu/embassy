@@ -120,8 +120,8 @@ impl<'d, T: Instance> Adc<'d, T> {
             reg.set_swstart(true);
         });
         T::regs().cr1().modify(|w| w.set_eocie(true));
-
         poll_fn(|cx| {
+            blocking_delay_us((1_000_000 * 1) / Self::freq().0 + 1);
             T::state().waker.register(cx.waker());
 
             if !T::regs().cr2().read().swstart() && T::regs().sr().read().eoc() {
